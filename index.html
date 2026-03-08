@@ -54,7 +54,7 @@
     </header><!-- Year Selector -->
     <div class="max-w-7xl mx-auto px-4 md:px-8 py-6">
      <div class="flex items-center gap-3 mb-6">
-      <label class="font-medium text-gray-700">Tahun Kegiatan:</label> <select id="public-year" onchange="updatePublicData()" class="border border-gray-300 rounded-lg px-4 py-2 bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-200"> <option value="2025">2025</option> <option value="2024">2024</option> <option value="2023">2023</option> </select>
+      <label class="font-medium text-gray-700">Tahun Kegiatan:</label> <select id="public-year" onchange="updatePublicData()" class="border border-gray-300 rounded-lg px-4 py-2 bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-200"> <option value="2026">2026</option> <option value="2025">2025</option> <option value="2024">2024</option> <option value="2023">2023</option> </select>
      </div><!-- Stats Cards -->
      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
       <div class="stat-card bg-white rounded-2xl p-6 card-shadow border-l-4 border-teal-500">
@@ -483,10 +483,10 @@
             <td class="px-4 py-3 text-sm"><span class="bg-teal-100 text-teal-700 px-2 py-1 rounded text-xs">Cibuntu</span></td>
             <td class="px-4 py-3">
              <div class="flex gap-2">
-              <button class="text-blue-600 hover:text-blue-800 p-1" title="Edit">
+              <button class="text-blue-600 hover:text-blue-800 p-1" title="Edit" data-action="edit-data">
                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-               </svg></button> <button class="text-red-600 hover:text-red-800 p-1" title="Hapus">
+               </svg></button> <button class="text-red-600 hover:text-red-800 p-1" title="Hapus" data-action="delete-data">
                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                </svg></button>
@@ -508,18 +508,18 @@
          <h3 class="text-xl font-bold text-gray-800 mb-2">Upload Data Excel</h3>
          <p class="text-gray-500 mb-6">Unggah file Excel untuk menambahkan data peserta CKG secara massal</p>
          <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 mb-6 hover:border-teal-500 transition cursor-pointer" onclick="document.getElementById('file-input').click()">
-          <input type="file" id="file-input" accept=".xlsx,.xls" class="hidden">
+          <input type="file" id="file-input" accept=".csv" class="hidden">
           <svg class="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewbox="0 0 24 24">
            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
-          <p class="text-gray-600">Klik atau seret file Excel ke sini</p>
-          <p class="text-sm text-gray-400 mt-1">Format: .xlsx atau .xls</p>
+          <p class="text-gray-600">Klik atau seret file CSV (template) ke sini</p>
+          <p class="text-sm text-gray-400 mt-1">Format: .csv (gunakan template yang diunduh)</p>
          </div>
          <div class="flex gap-4 justify-center">
-          <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 transition">
+          <button onclick="downloadTemplate()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 transition">
            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-           </svg> Download Template </button> <button class="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 transition">
+           </svg> Download Template </button> <button onclick="uploadData()" class="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 transition">
            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
            </svg> Upload Data </button>
@@ -566,7 +566,7 @@
          </div>
         </div>
         <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
-         <label class="font-medium text-gray-700">Tahun Laporan:</label> <select class="border border-gray-300 rounded-lg px-4 py-2 bg-white"> <option>2025</option> <option>2024</option> <option>2023</option> </select> <button class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg font-medium flex items-center gap-2 transition ml-auto">
+         <label class="font-medium text-gray-700">Tahun Laporan:</label> <select id="report-year" class="border border-gray-300 rounded-lg px-4 py-2 bg-white"> <option>2026</option> <option>2025</option> <option>2024</option> <option>2023</option> </select> <button onclick="downloadReport()" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg font-medium flex items-center gap-2 transition ml-auto">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
           </svg> Download Excel </button>
@@ -592,13 +592,13 @@
              <th class="pb-3">Aksi</th>
             </tr>
            </thead>
-           <tbody>
+           <tbody id="user-table-body">
             <tr class="border-t">
              <td class="py-3 font-medium">admin</td>
              <td class="py-3"><span class="bg-teal-100 text-teal-700 px-2 py-1 rounded text-xs">Administrator</span></td>
              <td class="py-3">
               <div class="flex gap-2">
-               <button class="text-blue-600 hover:text-blue-800 text-sm">Edit</button> <button class="text-red-600 hover:text-red-800 text-sm">Hapus</button>
+               <button class="text-blue-600 hover:text-blue-800 text-sm" data-action="edit-user">Edit</button> <button class="text-red-600 hover:text-red-800 text-sm" data-action="delete-user">Hapus</button>
               </div></td>
             </tr>
             <tr class="border-t">
@@ -606,7 +606,7 @@
              <td class="py-3"><span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">Operator</span></td>
              <td class="py-3">
               <div class="flex gap-2">
-               <button class="text-blue-600 hover:text-blue-800 text-sm">Edit</button> <button class="text-red-600 hover:text-red-800 text-sm">Hapus</button>
+               <button class="text-blue-600 hover:text-blue-800 text-sm" data-action="edit-user">Edit</button> <button class="text-red-600 hover:text-red-800 text-sm" data-action="delete-user">Hapus</button>
               </div></td>
             </tr>
            </tbody>
@@ -633,11 +633,11 @@
          </div>
          <div class="p-5 space-y-4">
           <div>
-           <label class="block text-sm font-medium text-gray-700 mb-2">Tahun</label> <select class="w-full border border-gray-300 rounded-lg px-4 py-2"> <option>2025</option> <option>2024</option> <option>2023</option> </select>
+           <label class="block text-sm font-medium text-gray-700 mb-2">Tahun</label> <select id="target-year" class="w-full border border-gray-300 rounded-lg px-4 py-2"> <option>2026</option> <option>2025</option> <option>2024</option> <option>2023</option> </select>
           </div>
           <div>
-           <label class="block text-sm font-medium text-gray-700 mb-2">Target Sasaran CKG</label> <input type="number" value="15000" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:border-teal-500 focus:ring-2 focus:ring-teal-200">
-          </div><button class="w-full bg-teal-600 hover:bg-teal-700 text-white py-2.5 rounded-lg font-medium transition"> Simpan Target </button>
+           <label class="block text-sm font-medium text-gray-700 mb-2">Target Sasaran CKG</label> <input id="target-input" type="number" value="15000" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:border-teal-500 focus:ring-2 focus:ring-teal-200">
+          </div><button onclick="saveTarget()" class="w-full bg-teal-600 hover:bg-teal-700 text-white py-2.5 rounded-lg font-medium transition"> Simpan Target </button>
          </div>
         </div><!-- Age Group Settings -->
         <div class="bg-white rounded-xl card-shadow lg:col-span-2">
@@ -1029,6 +1029,55 @@
       }
     }
 
+    function loadProfileFromStorage() {
+      try {
+        const saved = localStorage.getItem('profileData');
+        if (!saved) return;
+
+        const data = JSON.parse(saved);
+        const { fullname, jabatan, username, role } = data;
+
+        if (fullname) {
+          const fullnameDisplay = document.getElementById('profile-fullname-display');
+          const fullnameEdit = document.getElementById('profile-fullname-edit');
+          if (fullnameDisplay) fullnameDisplay.textContent = fullname;
+          if (fullnameEdit) fullnameEdit.value = fullname;
+        }
+
+        if (jabatan) {
+          const jabatanDisplay = document.getElementById('profile-jabatan-display');
+          const jabatanEdit = document.getElementById('profile-jabatan-edit');
+          if (jabatanDisplay) jabatanDisplay.textContent = jabatan;
+          if (jabatanEdit) jabatanEdit.value = jabatan;
+        }
+
+        if (username) {
+          const usernameDisplay = document.getElementById('profile-username-display');
+          const usernameEdit = document.getElementById('profile-username-edit');
+          if (usernameDisplay) usernameDisplay.textContent = username;
+          if (usernameEdit) usernameEdit.value = username;
+        }
+
+        if (role) {
+          const roleDisplay = document.getElementById('profile-role-display');
+          const roleEdit = document.getElementById('profile-role-edit');
+          if (roleEdit) roleEdit.value = role;
+          if (roleDisplay) {
+            roleDisplay.textContent =
+              role === '1'
+                ? '1 (Administrator)'
+                : role === '2'
+                ? '2 (Operator)'
+                : role === '3'
+                ? '3 (Viewer)'
+                : role;
+          }
+        }
+      } catch (err) {
+        console.error('Gagal memuat profil dari storage', err);
+      }
+    }
+
     function handleEditProfile(e) {
       e.preventDefault();
       const fullname = document.getElementById('profile-fullname-edit').value;
@@ -1036,19 +1085,47 @@
       const username = document.getElementById('profile-username-edit').value;
       const role = document.getElementById('profile-role-edit').value;
 
+      const data = { fullname, jabatan, username, role };
+      localStorage.setItem('profileData', JSON.stringify(data));
+
       document.getElementById('profile-fullname-display').textContent = fullname;
       document.getElementById('profile-jabatan-display').textContent = jabatan;
       document.getElementById('profile-username-display').textContent = username;
-      document.getElementById('profile-role-display').textContent = role === '1' ? '1 (Administrator)' : role === '2' ? '2 (Operator)' : '3 (Viewer)';
+      document.getElementById('profile-role-display').textContent =
+        role === '1'
+          ? '1 (Administrator)'
+          : role === '2'
+          ? '2 (Operator)'
+          : '3 (Viewer)';
 
       showToast('Profil berhasil diperbarui!');
     }
 
     function resetProfileForm() {
-      document.getElementById('profile-username-edit').value = 'admin';
-      document.getElementById('profile-fullname-edit').value = 'Ahmad Dwi Wijaya';
-      document.getElementById('profile-jabatan-edit').value = 'Penanggung Jawab Program';
-      document.getElementById('profile-role-edit').value = '1';
+      const saved = localStorage.getItem('profileData');
+      let data;
+
+      if (saved) {
+        try {
+          data = JSON.parse(saved);
+        } catch (_) {
+          data = null;
+        }
+      }
+
+      if (!data) {
+        data = {
+          username: 'admin',
+          fullname: 'Ahmad Dwi Wijaya',
+          jabatan: 'Penanggung Jawab Program',
+          role: '1'
+        };
+      }
+
+      document.getElementById('profile-username-edit').value = data.username;
+      document.getElementById('profile-fullname-edit').value = data.fullname;
+      document.getElementById('profile-jabatan-edit').value = data.jabatan;
+      document.getElementById('profile-role-edit').value = data.role;
     }
 
     function checkPasswordStrength() {
@@ -1141,6 +1218,227 @@
       showToast('Data peserta berhasil ditambahkan!');
     }
 
+    // Upload CSV helpers
+    function downloadTemplate() {
+      const headers = ['No', 'Tanggal', 'Nama', 'NIK', 'Tanggal Lahir', 'Usia', 'Kelurahan'];
+      const example = ['1', '15/01/2025', 'Nama Peserta', '3273XXXXXXXXXXXX', '12/05/1985', '39 Tahun 8 Bulan', 'Cibuntu'];
+
+      const lines = [];
+      lines.push(headers.join(','));
+      lines.push(example.map((v) => `"${v.replace(/"/g, '""')}"`).join(','));
+
+      const csvContent = '\uFEFF' + lines.join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'template-data-ckg.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function handleFileSelected(file) {
+      if (!file) {
+        showToast('Pilih file CSV terlebih dahulu.');
+        return;
+      }
+
+      const name = file.name.toLowerCase();
+      if (!name.endsWith('.csv')) {
+        showToast('Gunakan file CSV dari template yang diunduh.');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const text = e.target.result;
+        importCsvToTable(text);
+      };
+      reader.onerror = () => {
+        showToast('Gagal membaca file, coba lagi.');
+      };
+      reader.readAsText(file, 'utf-8');
+    }
+
+    function importCsvToTable(csvText) {
+      const rows = csvText.split(/\r?\n/).filter((line) => line.trim().length > 0);
+      if (rows.length <= 1) {
+        showToast('File CSV kosong atau tidak sesuai format.');
+        return;
+      }
+
+      const tbody = document.getElementById('data-table-body');
+      if (!tbody) {
+        showToast('Tabel data tidak ditemukan.');
+        return;
+      }
+
+      // Hapus semua baris lama
+      while (tbody.firstChild) {
+        tbody.removeChild(tbody.firstChild);
+      }
+
+      // Lewati header (index 0)
+      for (let i = 1; i < rows.length; i++) {
+        const line = rows[i];
+        if (!line.trim()) continue;
+
+        // Parsing CSV sangat sederhana (tanpa dukungan koma di dalam kolom)
+        const cols = line.split(',').map((c) => c.replace(/^"|"$/g, '').trim());
+        if (cols.length < 7) continue;
+
+        const tr = document.createElement('tr');
+        tr.className = 'border-b table-row';
+
+        const no = cols[0] || String(i);
+        const tanggal = cols[1] || '';
+        const nama = cols[2] || '';
+        const nik = cols[3] || '';
+        const tglLahir = cols[4] || '';
+        const usia = cols[5] || '';
+        const kelurahan = cols[6] || '';
+
+        tr.innerHTML = `
+          <td class="px-4 py-3 text-sm">${no}</td>
+          <td class="px-4 py-3 text-sm">${tanggal}</td>
+          <td class="px-4 py-3 text-sm font-medium">${nama}</td>
+          <td class="px-4 py-3 text-sm">${nik}</td>
+          <td class="px-4 py-3 text-sm">${tglLahir}</td>
+          <td class="px-4 py-3 text-sm">${usia}</td>
+          <td class="px-4 py-3 text-sm"><span class="bg-teal-100 text-teal-700 px-2 py-1 rounded text-xs">${kelurahan}</span></td>
+          <td class="px-4 py-3">
+            <div class="flex gap-2">
+              <button class="text-blue-600 hover:text-blue-800 p-1" title="Edit" data-action="edit-data">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+              </button>
+              <button class="text-red-600 hover:text-red-800 p-1" title="Hapus" data-action="delete-data">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </div>
+          </td>
+        `;
+
+        tbody.appendChild(tr);
+      }
+
+      showToast('Data dari CSV berhasil diimpor!');
+    }
+
+    function uploadData() {
+      const input = document.getElementById('file-input');
+      if (!input) {
+        showToast('Input file tidak ditemukan.');
+        return;
+      }
+
+      if (input.files && input.files[0]) {
+        handleFileSelected(input.files[0]);
+      } else {
+        input.click();
+        input.onchange = () => {
+          if (input.files && input.files[0]) {
+            handleFileSelected(input.files[0]);
+          }
+        };
+      }
+    }
+
+    // Data CKG table edit/delete handlers
+    function handleDataTableClick(e) {
+      const btn = e.target.closest('button');
+      if (!btn || !btn.dataset.action) return;
+
+      if (btn.dataset.action === 'edit-data') {
+        editDataRow(btn);
+      } else if (btn.dataset.action === 'delete-data') {
+        deleteDataRow(btn);
+      }
+    }
+
+    function editDataRow(button) {
+      const row = button.closest('tr');
+      if (!row) return;
+
+      const nameCell = row.querySelector('td:nth-child(3)');
+      const currentName = nameCell ? nameCell.textContent.trim() : '';
+      const newName = prompt('Ubah nama peserta:', currentName);
+
+      if (newName && nameCell) {
+        nameCell.textContent = newName;
+        showToast('Data peserta berhasil diperbarui!');
+      }
+    }
+
+    function deleteDataRow(button) {
+      const row = button.closest('tr');
+      if (!row) return;
+
+      const nameCell = row.querySelector('td:nth-child(3)');
+      const name = nameCell ? nameCell.textContent.trim() : 'data ini';
+
+      if (confirm(`Yakin ingin menghapus ${name}?`)) {
+        row.remove();
+        showToast('Data peserta berhasil dihapus!');
+      }
+    }
+
+    // User management table edit/delete handlers
+    function handleUserTableClick(e) {
+      const btn = e.target.closest('button');
+      if (!btn || !btn.dataset.action) return;
+
+      if (btn.dataset.action === 'edit-user') {
+        editUserRow(btn);
+      } else if (btn.dataset.action === 'delete-user') {
+        deleteUserRow(btn);
+      }
+    }
+
+    function editUserRow(button) {
+      const row = button.closest('tr');
+      if (!row) return;
+
+      const usernameCell = row.querySelector('td:nth-child(1)');
+      const roleBadge = row.querySelector('td:nth-child(2) span');
+
+      const currentUsername = usernameCell ? usernameCell.textContent.trim() : '';
+      const currentRole = roleBadge ? roleBadge.textContent.trim() : '';
+
+      const newUsername = prompt('Ubah username:', currentUsername);
+      if (newUsername && usernameCell) {
+        usernameCell.textContent = newUsername;
+      }
+
+      const newRole = prompt('Ubah role:', currentRole);
+      if (newRole && roleBadge) {
+        roleBadge.textContent = newRole;
+      }
+
+      if (newUsername || newRole) {
+        showToast('Data pengguna berhasil diperbarui!');
+      }
+    }
+
+    function deleteUserRow(button) {
+      const row = button.closest('tr');
+      if (!row) return;
+
+      const usernameCell = row.querySelector('td:nth-child(1)');
+      const username = usernameCell ? usernameCell.textContent.trim() : 'pengguna ini';
+
+      if (confirm(`Yakin ingin menghapus ${username}?`)) {
+        row.remove();
+        showToast('Pengguna berhasil dihapus!');
+      }
+    }
+
     // Calculate age
     function calculateAge() {
       const birthdate = document.getElementById('add-birthdate').value;
@@ -1175,18 +1473,152 @@
       }, 3000);
     }
 
+    // Target program handlers
+    function loadTargetFromStorage() {
+      try {
+        const saved = localStorage.getItem('targetConfig');
+        const input = document.getElementById('target-input');
+        const yearSelect = document.getElementById('target-year');
+        const publicYear = document.getElementById('public-year');
+        const publicTarget = document.getElementById('public-target');
+
+        if (!saved) {
+          if (input) input.value = config.total_target || defaultConfig.total_target;
+          return;
+        }
+
+        const data = JSON.parse(saved);
+        const year = data.year;
+        const target = data.target;
+
+        if (year && yearSelect) {
+          yearSelect.value = String(year);
+        }
+        if (year && publicYear) {
+          publicYear.value = String(year);
+        }
+        if (typeof target === 'number' && input) {
+          input.value = target;
+        }
+        if (typeof target === 'number' && publicTarget) {
+          publicTarget.textContent = Number(target).toLocaleString('id-ID');
+        }
+      } catch (err) {
+        console.error('Gagal memuat target dari storage', err);
+      }
+    }
+
+    function saveTarget() {
+      const yearSelect = document.getElementById('target-year');
+      const input = document.getElementById('target-input');
+      if (!yearSelect || !input) return;
+
+      const year = yearSelect.value;
+      const target = parseInt(input.value, 10);
+      if (isNaN(target) || target <= 0) {
+        showToast('Masukkan target sasaran yang valid.');
+        return;
+      }
+
+      const data = { year, target };
+      localStorage.setItem('targetConfig', JSON.stringify(data));
+
+      config.total_target = String(target);
+      applyConfig();
+
+      const publicYear = document.getElementById('public-year');
+      if (publicYear) {
+        publicYear.value = String(year);
+      }
+
+      showToast('Target program berhasil disimpan!');
+    }
+
     // Update data functions
     function updatePublicData() {
-      // Placeholder for year-based data filtering
+      const publicTarget = document.getElementById('public-target');
+      if (!publicTarget) return;
+
+      try {
+        const saved = localStorage.getItem('targetConfig');
+        if (saved) {
+          const data = JSON.parse(saved);
+          if (typeof data.target === 'number' && data.target > 0) {
+            publicTarget.textContent = Number(data.target).toLocaleString('id-ID');
+            return;
+          }
+        }
+      } catch (err) {
+        console.error('Gagal memperbarui data publik', err);
+      }
+
+      publicTarget.textContent = Number(config.total_target || defaultConfig.total_target).toLocaleString('id-ID');
     }
 
     function updateAdminData() {
-      // Placeholder for year-based data filtering
+      // Placeholder for tambahan logika filtering data admin jika dibutuhkan
+    }
+
+    // Laporan download handler
+    function downloadReport() {
+      const yearSelect = document.getElementById('report-year');
+      const year = yearSelect ? yearSelect.value : '';
+
+      const rows = document.querySelectorAll('#data-table-body tr');
+      if (!rows.length) {
+        showToast('Belum ada data peserta untuk dibuat laporan.');
+        return;
+      }
+
+      const headers = ['No', 'Tanggal', 'Nama', 'NIK', 'Tanggal Lahir', 'Usia', 'Kelurahan'];
+      const lines = [];
+
+      if (year) {
+        lines.push(`Tahun Laporan,${year}`);
+      }
+      lines.push(headers.join(','));
+
+      rows.forEach((tr) => {
+        const cells = tr.querySelectorAll('td');
+        if (cells.length < 7) return;
+
+        const values = [];
+        for (let i = 0; i < 7; i++) {
+          const text = cells[i].textContent.trim().replace(/"/g, '""');
+          values.push(`"${text}"`);
+        }
+        lines.push(values.join(','));
+      });
+
+      const csvContent = '\uFEFF' + lines.join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      const fileYear = year || new Date().getFullYear();
+      a.href = url;
+      a.download = `laporan-ckg-${fileYear}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
 
     // Initialize
     applyConfig();
     loadSavedLogo();
+    loadProfileFromStorage();
+    loadTargetFromStorage();
+
+    const dataTableBody = document.getElementById('data-table-body');
+    if (dataTableBody) {
+      dataTableBody.addEventListener('click', handleDataTableClick);
+    }
+
+    const userTableBody = document.getElementById('user-table-body');
+    if (userTableBody) {
+      userTableBody.addEventListener('click', handleUserTableClick);
+    }
   </script>
   </div>
  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d91087fd51aa6d7',t:'MTc3Mjk2NDQ1MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>

@@ -558,7 +558,7 @@
            <li>11. Status Pelayanan - Belum Pemeriksaan / Sedang Pemeriksaan / Selesai Pemeriksaan</li>
           </ul>
          </div>
-         <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 mb-6 hover:border-teal-500 transition cursor-pointer" onclick="document.getElementById('file-input').click()">
+         <div id="file-drop-zone" class="border-2 border-dashed border-gray-300 rounded-xl p-8 mb-6 hover:border-teal-500 transition cursor-pointer" onclick="document.getElementById('file-input').click()">
           <input type="file" id="file-input" accept=".csv" class="hidden">
           <svg class="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewbox="0 0 24 24">
            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
@@ -2157,6 +2157,11 @@
       const file = fileInput.files[0];
       handleFileSelected(file);
       fileInput.value = ''; // Reset input
+
+      // attempt to send to server in background (stubbed)
+      sendFileToServer(file).catch((err) => {
+        console.warn('Upload ke server gagal:', err);
+      });
     }
 
     function handleFileSelected(file) {
@@ -2165,9 +2170,14 @@
         return;
       }
 
+      // Basic validation: type and size
       const name = file.name.toLowerCase();
-      if (!name.endsWith('.csv')) {
+      if (!name.endsWith('.csv') && file.type !== 'text/csv') {
         showToast('Gunakan file CSV dari template yang diunduh.');
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) { // 10MB limit
+        showToast('Ukuran file terlalu besar. Maksimum 10MB.');
         return;
       }
 
@@ -2259,6 +2269,31 @@
       
       showToast(`Data dari CSV berhasil diimpor! (${importedCount} baris)`);
       dataEvents.emit('dataImported', { count: importedCount });
+    }
+
+    // Optional: send raw file to backend for persistence
+    async function sendFileToServer(file) {
+      try {
+        const form = new FormData();
+        form.append('csv', file);
+        // adjust endpoint as needed
+        const resp = await fetch('/api/upload-csv', {
+          method: 'POST',
+          body: form
+        });
+        if (!resp.ok) {
+          const text = await resp.text();
+          throw new Error(`HTTP ${resp.status}: ${text}`);
+        }
+        const result = await resp.json().catch(() => null);
+        console.log('Server response:', result);
+        showToast('File berhasil dikirim ke server');
+        return result;
+      } catch (err) {
+        console.error('Error sending file to server:', err);
+        showToast('Gagal mengirim file ke server');
+        throw err;
+      }
     }
 
     function editDataRow(button) {
@@ -2656,6 +2691,30 @@
     if (userTableBody) {
       userTableBody.addEventListener('click', handleUserTableClick);
     }
+
+    // Initialize drag & drop support for CSV upload
+    document.addEventListener('DOMContentLoaded', () => {
+      const dropZone = document.getElementById('file-drop-zone');
+      if (dropZone) {
+        dropZone.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          dropZone.classList.add('border-teal-500');
+        });
+        dropZone.addEventListener('dragleave', () => {
+          dropZone.classList.remove('border-teal-500');
+        });
+        dropZone.addEventListener('drop', (e) => {
+          e.preventDefault();
+          dropZone.classList.remove('border-teal-500');
+          const files = e.dataTransfer.files;
+          if (files.length) {
+            handleFileSelected(files[0]);
+            // also attempt server upload
+            sendFileToServer(files[0]).catch(err => console.warn('Upload ke server gagal:', err));
+          }
+        });
+      }
+    });
     
     updatePublicDashboard('2026'); // Default year
     updateAdminData(); // Update admin dashboard

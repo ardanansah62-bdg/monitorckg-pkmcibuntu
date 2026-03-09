@@ -2148,6 +2148,23 @@
       URL.revokeObjectURL(url);
     }
 
+    function validateCsvFile(file) {
+      if (!file) {
+        showToast('Pilih file CSV terlebih dahulu.');
+        return false;
+      }
+      const name = file.name.toLowerCase();
+      if (!name.endsWith('.csv') && file.type !== 'text/csv') {
+        showToast('Gunakan file CSV dari template yang diunduh.');
+        return false;
+      }
+      if (file.size > 10 * 1024 * 1024) { // 10MB limit
+        showToast('Ukuran file terlalu besar. Maksimum 10MB.');
+        return false;
+      }
+      return true;
+    }
+
     function uploadData() {
       const fileInput = document.getElementById('file-input');
       if (!fileInput || fileInput.files.length === 0) {
@@ -2155,29 +2172,23 @@
         return;
       }
       const file = fileInput.files[0];
+      if (!validateCsvFile(file)) {
+        fileInput.value = '';
+        return;
+      }
       handleFileSelected(file);
       fileInput.value = ''; // Reset input
 
       // attempt to send to server in background (stubbed)
-      sendFileToServer(file).catch((err) => {
-        console.warn('Upload ke server gagal:', err);
-      });
+      if (ENABLE_SERVER_UPLOAD) {
+        sendFileToServer(file).catch((err) => {
+          console.warn('Upload ke server gagal:', err);
+        });
+      }
     }
 
     function handleFileSelected(file) {
-      if (!file) {
-        showToast('Pilih file CSV terlebih dahulu.');
-        return;
-      }
-
-      // Basic validation: type and size
-      const name = file.name.toLowerCase();
-      if (!name.endsWith('.csv') && file.type !== 'text/csv') {
-        showToast('Gunakan file CSV dari template yang diunduh.');
-        return;
-      }
-      if (file.size > 10 * 1024 * 1024) { // 10MB limit
-        showToast('Ukuran file terlalu besar. Maksimum 10MB.');
+      if (!validateCsvFile(file)) {
         return;
       }
 
@@ -2272,20 +2283,48 @@
     }
 
     // Optional: send raw file to backend for persistence
+    // Set to true when backend is available, false to skip server uploads entirely
+    const ENABLE_SERVER_UPLOAD = false;
+    // URL for the upload endpoint; change if your backend uses a different path
+    const API_UPLOAD_URL = '/api/upload-csv';
+
     async function sendFileToServer(file) {
+      if (!ENABLE_SERVER_UPLOAD) {
+        console.log('Server upload disabled by configuration');
+        return;
+      }
+
+      if (!validateCsvFile(file)) {
+        console.warn('Refused upload: invalid file');
+        return;
+      }
+
       try {
         const form = new FormData();
         form.append('csv', file);
-        // adjust endpoint as needed
-        const resp = await fetch('/api/upload-csv', {
+        console.log('Uploading file to', API_UPLOAD_URL, 'size', file.size);
+        const resp = await fetch(API_UPLOAD_URL, {
           method: 'POST',
           body: form
         });
+        if (resp.status === 404) {
+          console.warn('Server endpoint', API_UPLOAD_URL, 'not found (404)');
+          showToast('Server upload tidak tersedia (404)');
+          return null; // do not throw further
+        }
         if (!resp.ok) {
           const text = await resp.text();
+          console.error('Upload failed, server returned', resp.status, text);
+          showToast(`Upload gagal (${resp.status})`);
           throw new Error(`HTTP ${resp.status}: ${text}`);
         }
-        const result = await resp.json().catch(() => null);
+        let result = null;
+        const ct = resp.headers.get('Content-Type') || '';
+        if (ct.includes('application/json')) {
+          result = await resp.json().catch(() => null);
+        } else {
+          result = await resp.text().catch(() => null);
+        }
         console.log('Server response:', result);
         showToast('File berhasil dikirim ke server');
         return result;
@@ -2709,8 +2748,10 @@
           const files = e.dataTransfer.files;
           if (files.length) {
             handleFileSelected(files[0]);
-            // also attempt server upload
-            sendFileToServer(files[0]).catch(err => console.warn('Upload ke server gagal:', err));
+            // also attempt server upload (only if enabled)
+            if (ENABLE_SERVER_UPLOAD) {
+              sendFileToServer(files[0]).catch(err => console.warn('Upload ke server gagal:', err));
+            }
           }
         });
       }
